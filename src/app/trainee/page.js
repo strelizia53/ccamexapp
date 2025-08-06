@@ -64,10 +64,10 @@ export default function TraineeDashboard() {
 
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>🎓 Trainee Dashboard</h1>
+      <h1 style={styles.heading}> Trainee Dashboard</h1>
       {userData && <p style={styles.welcome}>Welcome, {userData.username}!</p>}
 
-      <h2 style={styles.sectionTitle}>📌 Enrolled Programs</h2>
+      <h2 style={styles.sectionTitle}> Enrolled Programs</h2>
 
       {enrolledPrograms.length === 0 ? (
         <p>You are not enrolled in any training programs yet.</p>
