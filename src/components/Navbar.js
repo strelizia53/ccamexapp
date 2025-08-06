@@ -2,34 +2,57 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { auth } from "@/firebase/config";
+import { auth, db } from "@/firebase/config";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null); // For username & userType
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
-      setUser(firebaseUser);
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+
+        // Fetch additional user info from Firestore
+        const userRef = doc(db, "users", firebaseUser.uid);
+        const docSnap = await getDoc(userRef);
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        }
+      } else {
+        setUser(null);
+        setUserData(null);
+      }
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
   const handleLogout = async () => {
     await signOut(auth);
     setUser(null);
+    setUserData(null);
+  };
+
+  const getDashboardPath = () => {
+    if (!userData) return "/";
+    const role = userData.userType?.toLowerCase();
+    if (role === "admin") return "/admin";
+    if (role === "trainer") return "/trainer";
+    if (role === "trainee") return "/trainee";
+    return "/";
   };
 
   return (
     <nav style={styles.nav}>
       <div style={styles.left}>
-        <span style={styles.brand}>Amex</span>
+        <Link href="/" style={styles.brand}>
+          Amex
+        </Link>
       </div>
       <ul style={styles.right}>
-        <li>
-          <Link href="/">Home</Link>
-        </li>
         {!user ? (
           <>
             <li>
@@ -41,7 +64,12 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <li style={styles.username}> {user.email}</li>
+            <li>
+              <Link href={getDashboardPath()} style={styles.link}>
+                Dashboard
+              </Link>
+            </li>
+            <li style={styles.username}>{userData?.username || "User"}</li>
             <li>
               <button onClick={handleLogout} style={styles.logoutButton}>
                 Logout
@@ -70,6 +98,7 @@ const styles = {
     fontSize: "1.5rem",
     fontWeight: "bold",
     color: "#00e6c2",
+    textDecoration: "none",
   },
   right: {
     flex: 1,
@@ -78,6 +107,11 @@ const styles = {
     gap: "1.5rem",
     listStyle: "none",
     alignItems: "center",
+  },
+  link: {
+    color: "#e0fdfb",
+    textDecoration: "none",
+    fontWeight: "bold",
   },
   username: {
     color: "#00e6c2",

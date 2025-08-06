@@ -62,9 +62,6 @@ export default function AdminDashboard() {
       <header style={styles.header}>
         <h1 style={styles.heading}>Admin Dashboard</h1>
         <div>
-          <button onClick={handleLogout} style={styles.logoutButton}>
-            Logout
-          </button>
           <button
             style={styles.createButton}
             onClick={() => router.push("/admin/create-program")}
