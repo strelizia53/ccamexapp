@@ -1,11 +1,15 @@
-"use client"; // Enables client-side interactivity
+"use client";
 
 import { useState } from "react";
+import { auth, db } from "@/firebase/config";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    password: "",
     userType: "trainee",
   });
 
@@ -18,23 +22,43 @@ export default function RegisterPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!formData.username || !formData.email) {
+    const { username, email, password, userType } = formData;
+
+    if (!username || !email || !password) {
       alert("Please fill in all fields.");
       return;
     }
 
-    // Placeholder for submit logic (e.g. API call)
-    console.log("Registering user:", formData);
-    setSubmitted(true);
+    try {
+      // Register user with Firebase Auth
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const uid = userCredential.user.uid;
+
+      // Store additional user info in Firestore
+      await setDoc(doc(db, "users", uid), {
+        username,
+        email,
+        userType,
+      });
+
+      setSubmitted(true);
+    } catch (error) {
+      console.error("Registration error:", error.message);
+      alert("Registration failed: " + error.message);
+    }
   };
 
   if (submitted) {
     return (
-      <div>
+      <div style={styles.container}>
         <h1>✅ Registered!</h1>
         <p>
           Welcome, {formData.username}! You registered as a{" "}
@@ -71,6 +95,17 @@ export default function RegisterPage() {
         </label>
 
         <label style={styles.label}>
+          Password:
+          <input
+            style={styles.input}
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label style={styles.label}>
           User Type:
           <select
             style={styles.input}
@@ -99,6 +134,7 @@ const styles = {
     backgroundColor: "#121212",
     borderRadius: "10px",
     boxShadow: "0 0 20px rgba(0,255,255,0.05)",
+    color: "#e0fdfb",
   },
   form: {
     display: "flex",

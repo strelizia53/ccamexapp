@@ -1,6 +1,8 @@
-"use client"; // Enables client-side interactivity
+"use client";
 
 import { useState } from "react";
+import { auth } from "@/firebase/config";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -9,6 +11,7 @@ export default function LoginPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -17,18 +20,23 @@ export default function LoginPage() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simple validation
-    if (!formData.email || !formData.password) {
+    const { email, password } = formData;
+
+    if (!email || !password) {
       alert("Please fill in all fields.");
       return;
     }
 
-    // Placeholder for actual login logic
-    console.log("Logging in with:", formData);
-    setSubmitted(true);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Login error:", err.message);
+      setError("Invalid email or password");
+    }
   };
 
   if (submitted) {
@@ -66,6 +74,8 @@ export default function LoginPage() {
           />
         </label>
 
+        {error && <p style={styles.error}>{error}</p>}
+
         <button type="submit" className="button">
           Login
         </button>
@@ -82,6 +92,7 @@ const styles = {
     backgroundColor: "#121212",
     borderRadius: "10px",
     boxShadow: "0 0 20px rgba(0,255,255,0.05)",
+    color: "#e0fdfb",
   },
   form: {
     display: "flex",
@@ -103,5 +114,9 @@ const styles = {
     border: "1px solid #00bfa5",
     backgroundColor: "#0d0d0d",
     color: "#e0fdfb",
+  },
+  error: {
+    color: "tomato",
+    fontWeight: "bold",
   },
 };

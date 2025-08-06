@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <footer>
-      <p>© {new Date().getFullYear()} CCAMEX. All rights reserved.</p>
+      <p>© {new Date().getFullYear()} AMEX. All rights reserved.</p>
     </footer>
   );
 }

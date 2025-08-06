@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Home() {
   return (
     <div style={styles.container}>
-      <h1 style={styles.heading}>Welcome to CCAMEX App</h1>
+      <h1 style={styles.heading}>Welcome to AMEX</h1>
       <p style={styles.description}>
         This is your placeholder homepage. Start building your application here.
       </p>
