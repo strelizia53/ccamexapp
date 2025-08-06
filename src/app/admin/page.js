@@ -60,7 +60,7 @@ export default function AdminDashboard() {
   return (
     <div style={styles.container}>
       <header style={styles.header}>
-        <h1 style={styles.heading}>🎓 Admin Dashboard</h1>
+        <h1 style={styles.heading}>Admin Dashboard</h1>
         <div>
           <button onClick={handleLogout} style={styles.logoutButton}>
             Logout

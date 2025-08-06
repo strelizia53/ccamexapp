@@ -1,38 +1,39 @@
-// src/components/TrainingCard.js
+// components/TrainingCard.js
+"use client";
+
+import Link from "next/link";
+
 export default function TrainingCard({ program }) {
   return (
-    <div style={styles.card}>
-      <h3 style={styles.title}>{program.trainingArea}</h3>
-      <p>
-        <strong>Trainer:</strong> {program.trainerName}
-      </p>
-      <p>
-        <strong>Schedule:</strong> {new Date(program.schedule).toLocaleString()}
-      </p>
-      <p>
-        <strong>Venue:</strong> {program.venue}
-      </p>
-      {program.prerequisites && (
+    <Link href={`/programs/${program.id}`} style={styles.link}>
+      <div style={styles.card}>
+        <h3>{program.trainingArea}</h3>
         <p>
-          <strong>Prerequisites:</strong> {program.prerequisites}
+          <strong>Trainer:</strong> {program.trainerName}
         </p>
-      )}
-    </div>
+        <p>
+          <strong>Schedule:</strong>{" "}
+          {new Date(program.schedule).toLocaleString()}
+        </p>
+        <p>
+          <strong>Venue:</strong> {program.venue}
+        </p>
+      </div>
+    </Link>
   );
 }
 
 const styles = {
+  link: {
+    textDecoration: "none",
+  },
   card: {
     backgroundColor: "#1a1a1a",
-    padding: "1.5rem",
-    borderRadius: "10px",
+    padding: "1rem",
+    borderRadius: "8px",
     border: "1px solid #00bfa5",
-    marginBottom: "1.5rem",
-    boxShadow: "0 0 15px rgba(0,255,255,0.05)",
-  },
-  title: {
-    fontSize: "1.5rem",
-    marginBottom: "0.5rem",
-    color: "#00e6c2",
+    cursor: "pointer",
+    transition: "transform 0.2s ease, box-shadow 0.2s ease",
+    color: "#e0fdfb",
   },
 };

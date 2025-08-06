@@ -41,7 +41,7 @@ export default function Navbar() {
           </>
         ) : (
           <>
-            <li style={styles.username}>👤 {user.email}</li>
+            <li style={styles.username}> {user.email}</li>
             <li>
               <button onClick={handleLogout} style={styles.logoutButton}>
                 Logout
