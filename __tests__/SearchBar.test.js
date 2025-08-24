@@ -9,4 +9,9 @@ describe('SearchBar', () => {
     fireEvent.change(input, { target: { value: 'cardio' } });
     expect(setSearchQuery).toHaveBeenCalledWith('cardio');
   });
+
+  it('renders the current query value', () => {
+    render(<SearchBar searchQuery="initial" setSearchQuery={() => {}} />);
+    expect(screen.getByDisplayValue('initial')).toBeInTheDocument();
+  });
 });

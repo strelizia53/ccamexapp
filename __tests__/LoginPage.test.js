@@ -1,4 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
+
+// Mock Firebase config and auth modules before importing the page
+jest.mock('@/firebase/config', () => ({ auth: {} }), { virtual: true });
 import LoginPage from '@/app/login/page';
 
 jest.mock('@/firebase/config', () => ({ auth: {} }));
@@ -8,9 +11,20 @@ jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: (...args) => mockSignIn(...args),
 }));
 
+import LoginPage from '@/app/login/page';
+
 describe('LoginPage', () => {
   beforeEach(() => {
     mockSignIn.mockReset();
+  });
+
+  it('alerts when required fields are empty', () => {
+    const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
+    render(<LoginPage />);
+    fireEvent.click(screen.getByRole('button', { name: /login/i }));
+    expect(alertSpy).toHaveBeenCalledWith('Please fill in all fields.');
+    expect(mockSignIn).not.toHaveBeenCalled();
+    alertSpy.mockRestore();
   });
 
   it('shows success message on successful login', async () => {
