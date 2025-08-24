@@ -1,19 +1,25 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import Home from '@/app/page';
-jest.mock('@/components/TrainingCard', () => ({
-  __esModule: true,
-  default: ({ program }) => <div data-testid="card">{program.trainingArea}</div>,
-}), { virtual: true });
-import Home from '@/app/page';
-}));
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+
+jest.mock(
+  "@/components/TrainingCard",
+  () => ({
+    __esModule: true,
+    default: ({ program }) => (
+      <div data-testid="card">{program.trainingArea}</div>
+    ),
+  }),
+  { virtual: true }
+);
+import Home from "@/app/page";
 
 const mockGetDocs = jest.fn();
-jest.mock('firebase/firestore', () => ({
+jest.mock("firebase/firestore", () => ({
+  getFirestore: jest.fn(), // Mock getFirestore to avoid import errors
   collection: jest.fn(),
   getDocs: (...args) => mockGetDocs(...args),
 }));
 
-describe('Home page', () => {
+describe("Home page", () => {
   beforeEach(() => {
     mockGetDocs.mockResolvedValue({
       docs: Array.from({ length: 10 }, (_, i) => ({
@@ -28,24 +34,31 @@ describe('Home page', () => {
     });
   });
 
-  it('paginates programs', async () => {
+  it("paginates programs", async () => {
     render(<Home />);
-    expect(await screen.findAllByTestId('card')).toHaveLength(9);
-    fireEvent.click(screen.getByRole('button', { name: '2' }));
-    await waitFor(() => expect(screen.getAllByTestId('card')).toHaveLength(1));
+    expect(await screen.findAllByTestId("card")).toHaveLength(9);
+    fireEvent.click(screen.getByRole("button", { name: "2" }));
+    await waitFor(() => expect(screen.getAllByTestId("card")).toHaveLength(1));
   });
 
-  it('filters programs based on search query', async () => {
+  it("filters programs based on search query", async () => {
     render(<Home />);
-    const input = await screen.findByPlaceholderText('Search by training area...');
-    fireEvent.change(input, { target: { value: 'Area 10' } });
-    await waitFor(() => expect(screen.getAllByTestId('card')).toHaveLength(1));
-    expect(screen.getByText('Area 10')).toBeInTheDocument();
+    const input = await screen.findByPlaceholderText(
+      "Search by training area..."
+    );
+    fireEvent.change(input, { target: { value: "Area 10" } });
+    await waitFor(() => expect(screen.getAllByTestId("card")).toHaveLength(1));
+    expect(screen.getByText("Area 10")).toBeInTheDocument();
   });
-  it('shows message when no programs match search', async () => {
+
+  it("shows message when no programs match search", async () => {
     render(<Home />);
-    const input = await screen.findByPlaceholderText('Search by training area...');
-    fireEvent.change(input, { target: { value: 'Nonexistent' } });
-    await waitFor(() => expect(screen.getByText('No programs found.')).toBeInTheDocument());
+    const input = await screen.findByPlaceholderText(
+      "Search by training area..."
+    );
+    fireEvent.change(input, { target: { value: "Nonexistent" } });
+    await waitFor(() =>
+      expect(screen.getByText("No programs found.")).toBeInTheDocument()
+    );
   });
 });
