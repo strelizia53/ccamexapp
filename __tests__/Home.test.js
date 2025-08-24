@@ -1,10 +1,11 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-
+import Home from '@/app/page';
 jest.mock('@/components/TrainingCard', () => ({
   __esModule: true,
   default: ({ program }) => <div data-testid="card">{program.trainingArea}</div>,
 }), { virtual: true });
 import Home from '@/app/page';
+}));
 
 const mockGetDocs = jest.fn();
 jest.mock('firebase/firestore', () => ({
@@ -41,7 +42,6 @@ describe('Home page', () => {
     await waitFor(() => expect(screen.getAllByTestId('card')).toHaveLength(1));
     expect(screen.getByText('Area 10')).toBeInTheDocument();
   });
-
   it('shows message when no programs match search', async () => {
     render(<Home />);
     const input = await screen.findByPlaceholderText('Search by training area...');

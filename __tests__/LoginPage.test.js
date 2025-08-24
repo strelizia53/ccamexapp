@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 // Mock Firebase config and auth modules before importing the page
 jest.mock('@/firebase/config', () => ({ auth: {} }), { virtual: true });
+import LoginPage from '@/app/login/page';
+
+jest.mock('@/firebase/config', () => ({ auth: {} }));
+
 const mockSignIn = jest.fn();
 jest.mock('firebase/auth', () => ({
   signInWithEmailAndPassword: (...args) => mockSignIn(...args),
@@ -41,4 +45,3 @@ describe('LoginPage', () => {
     expect(await screen.findByText(/Invalid email or password/i)).toBeInTheDocument();
   });
 });
-
